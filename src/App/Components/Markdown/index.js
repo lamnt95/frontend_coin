@@ -8,6 +8,7 @@ import DragBar from './DragBar.js';
 import 'github-markdown-css';
 import useDrop from '../../Container/Hooks/useDrop.js';
 import uploadFile from '../../Lib/uploadFile.js';
+import db from "./db.json"
 
 import axios from "axios"
 import _ from "lodash"
@@ -44,6 +45,22 @@ const Markdown = ({ className }) => {
     })
   }
 
+  const fetch2 = () => {
+    SetLoading(".......")
+    console.log(db)
+    const listItems = _.map(db, (it, index) => {
+      return <tr key={it.id} onClick={() => { setText(it.markdown); SetActive(index) }}>
+        <td>{index}</td>
+        <td>{it.date}</td>
+        <td>{it.name}</td>
+        <td>{_.get(it, "articleType")}</td>
+        <td onClick={() => { window.open(it.link) }}>Link</td>
+      </tr>
+    })
+    setItems(listItems)
+    SetLoading("")
+  }
+
   useEffect(() => {
     const handleMouseUp = () => setDrag(false);
     document.addEventListener('mouseup', handleMouseUp);
@@ -64,21 +81,18 @@ const Markdown = ({ className }) => {
         setWidth(pageX - startX);
       }}
     >
-      <button onClick={fetch} >
+      <button onClick={fetch2} >
         Load {loading}
       </button>
 
       <div id="customersWrap">
         <table id="customers">
-          <thead class="fixedmenu">
+          <thead className="fixedmenu">
             <tr>
               <th>{active}</th>
-              {/* <th>Title</th>
-              <th>Type</th>
-              <th>Link</th> */}
             </tr>
           </thead>
-          <tbody class="tbody2">
+          <tbody className="tbody2">
             {items}
           </tbody>
         </table>

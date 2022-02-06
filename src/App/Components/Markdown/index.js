@@ -8,7 +8,6 @@ import DragBar from './DragBar.js';
 import 'github-markdown-css';
 import useDrop from '../../Container/Hooks/useDrop.js';
 import uploadFile from '../../Lib/uploadFile.js';
-import db from "./db.json"
 
 import axios from "axios"
 import _ from "lodash"
@@ -45,10 +44,12 @@ const Markdown = ({ className }) => {
     })
   }
 
-  const fetch2 = () => {
+  const fetch2 = async() => {
     SetLoading(".......")
-    console.log(db)
-    const listItems = _.map(db, (it, index) => {
+    const a = await axios.get("https://raw.githubusercontent.com/lamnt95/cryptocoindb/main/main/research.json")
+    const b = _.get(a, "data")
+    console.log("b", b)
+    const listItems = _.map(b, (it, index) => {
       return <tr key={it.id} onClick={() => { setText(it.markdown); SetActive(index) }}>
         <td>{index}</td>
         <td>{it.date}</td>

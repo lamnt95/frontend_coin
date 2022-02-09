@@ -44,15 +44,24 @@ const Markdown = ({ className }) => {
     })
   }
 
-  const fetch2 = async() => {
+  const fetch2 = async () => {
     SetLoading(".......")
     const a = await axios.get("https://raw.githubusercontent.com/lamnt95/cryptocoindb/main/main/research.json")
     const b = _.get(a, "data")
-    console.log("b", b)
-    const listItems = _.map(b, (it, index) => {
+    const c = _.map(b, (it) => {
+      it.updateDate = new Date(it.date * 1000);
+      const month = it.updateDate.getMonth() + 1;
+      const year = it.updateDate.getFullYear();
+      it.updateDateStr = it.updateDate.getDate() + "-" + month + "-" + year;
+      return it;
+    })
+    const d = _.sortBy(c, ["updateDate"])
+    const e = _.reverse(d)
+    console.log("e", e)
+    const listItems = _.map(e, (it, index) => {
       return <tr key={it.id} onClick={() => { setText(it.markdown); SetActive(index) }}>
         <td>{index}</td>
-        <td>{it.date}</td>
+        <td>{it.updateDateStr}</td>
         <td>{it.name}</td>
         <td>{_.get(it, "articleType")}</td>
         <td onClick={() => { window.open(it.link) }}>Link</td>
@@ -71,6 +80,13 @@ const Markdown = ({ className }) => {
   }, []);
   // The state `isDrag` must be false, when mouse up!
   // So we listen it in window! (Seems ugly, but it just works ha.)
+
+  useEffect(() => {
+    // Update the document title using the browser API
+    console.log("Component did mount")
+    fetch2()
+  }, [1]);
+
   return (
     <div
       ref={markdownRef}
@@ -82,9 +98,9 @@ const Markdown = ({ className }) => {
         setWidth(pageX - startX);
       }}
     >
-      <button onClick={fetch2} >
+      {/* <button onClick={fetch2} >
         Load {loading}
-      </button>
+      </button> */}
 
       <div id="customersWrap">
         <table id="customers">
